@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -108,6 +109,8 @@ public class PlayerController : MonoBehaviour
                 Cursor.lockState = CursorLockMode.Locked;
             }
         }
+        animator.SetBool("InAir", state.jumper.inAir);
+        animator.SetFloat("Speed", Math.Abs(state.velocity.z)+Math.Abs(state.velocity.x));
     }
 
     void FixedUpdate()
