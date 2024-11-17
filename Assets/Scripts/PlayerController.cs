@@ -43,7 +43,7 @@ public class PlayerController : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
 
-        lookAction   = InputSystem.actions.FindAction("Look");
+        lookAction = InputSystem.actions.FindAction("Look");
         attackAction = InputSystem.actions.FindAction("Attack");
 
         lookRotation = new Vector2(cameraCenter.transform.rotation.eulerAngles.y, cameraCenter.transform.rotation.eulerAngles.x);
@@ -89,7 +89,7 @@ public class PlayerController : MonoBehaviour
         {
             float k = delta2 / eps;
             lastParrotDirection = new Vector3(lastParrotDirection.x, lastParrotDirection.y * k, lastParrotDirection.z);
-            parrot.transform.rotation =  Quaternion.LookRotation(lastParrotDirection);
+            parrot.transform.rotation = Quaternion.LookRotation(lastParrotDirection);
         }
 
         if (attackAction.IsPressed())
@@ -126,7 +126,7 @@ public class PlayerController : MonoBehaviour
         }
         animator.SetBool("InAir", state.jumper.inAir);
         animator.SetBool("Flying", state.flying);
-        animator.SetFloat("Speed", Math.Abs(state.velocity.z)+Math.Abs(state.velocity.x));
+        animator.SetFloat("Speed", Math.Abs(state.velocity.z) + Math.Abs(state.velocity.x));
     }
 
     void FixedUpdate()
@@ -149,11 +149,22 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.collider.tag == "Obstacle")
         {
-            transform.position = restartLocation;
-            lookRotation = restartRotation;
-            parrot.transform.rotation = Quaternion.Euler(lookRotation.y, lookRotation.x, 0);
-            body.linearVelocity = Vector3.zero;
+            Die();
         }
+    }
+
+    public void Die()
+    {
+        transform.position = restartLocation;
+        lookRotation = restartRotation;
+        parrot.transform.rotation = Quaternion.Euler(lookRotation.y, lookRotation.x, 0);
+        body.linearVelocity = Vector3.zero;
+        controllerInstances = controllers.Select(c => c.Construct()).ToArray();
+        controllerInstances[currentSegment].Enabled = true;
+        animator.SetTrigger("Die");
+        animator.SetBool("InAir", false);
+        animator.SetBool("Flying", false);
+        animator.SetFloat("Speed", 0);
     }
 
     public void SetRestartParameters(Vector3 location, Vector3 rotation)
