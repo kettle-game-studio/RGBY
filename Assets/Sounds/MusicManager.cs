@@ -45,4 +45,9 @@ public class MusicManager : MonoBehaviour
         source.clip = main;
         source.Play();
     }
+    public void PlayFinish()
+    {
+        source.clip = final;
+        source.Play();
+    }
 }
