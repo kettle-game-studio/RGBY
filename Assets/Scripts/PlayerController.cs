@@ -11,12 +11,15 @@ public class PlayerController : MonoBehaviour
     public Vector2 rotationLimits = new Vector2(-60, 60);
     public Transform cameraCenter;
     public JumpCollider jumpCollider;
-    public MeshRenderer mesh;
+    public SkinnedMeshRenderer mesh;
+    public Transform parrot;
     public RectTransform circleContainer;
+    public Animator animator;
 
     public ControllerSettings[] controllers;
-    public IController[] controllerInstances;
-    public RawImage[] circleParts;
+    public Material[] materials;
+    IController[] controllerInstances;
+    RawImage[] circleParts;
 
 
     InputAction lookAction;
@@ -52,9 +55,10 @@ public class PlayerController : MonoBehaviour
 
         state.jumper = jumpCollider;
         state.transform = body.transform;
+        state.animator = animator;
 
         controllerInstances[currentSegment].Enabled = true;
-        mesh.material.SetColor("_BaseColor", circleParts[currentSegment].color);
+        mesh.material = materials[currentSegment];
     }
 
     void Update()
@@ -67,6 +71,10 @@ public class PlayerController : MonoBehaviour
 
         cameraCenter.transform.rotation = Quaternion.Euler(lookRotation.y, lookRotation.x, 0);
 
+        if (new Vector2(body.linearVelocity.x, body.linearVelocity.z).magnitude > 0.01f)
+        {
+            parrot.transform.rotation = Quaternion.LookRotation(new Vector3(body.linearVelocity.x, 0, body.linearVelocity.z));
+        }
 
         if (attackAction.IsPressed())
         {
@@ -96,7 +104,7 @@ public class PlayerController : MonoBehaviour
                 controllerInstances[currentSegment].Enabled = false;
                 currentSegment = lastSegment;
                 controllerInstances[currentSegment].Enabled = true;
-                mesh.material.SetColor("_BaseColor", circleParts[currentSegment].color);
+                mesh.material = materials[currentSegment];
                 Cursor.lockState = CursorLockMode.Locked;
             }
         }

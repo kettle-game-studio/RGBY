@@ -19,7 +19,7 @@ public class CameraHolder : MonoBehaviour
         RaycastHit hit;
         float distance;
         Vector3 startPoint = transform.position + vector * minDistance;
-        if (Physics.Raycast(startPoint, vector, out hit, maxDistance))
+        if (Physics.Raycast(startPoint, vector, out hit, maxDistance, ~0, QueryTriggerInteraction.Ignore))
         {
             distance = hit.distance;
         }
