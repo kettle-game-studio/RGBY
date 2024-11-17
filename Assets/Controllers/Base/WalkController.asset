@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 4becd037f4bfaa04ab530100edd3fa79, type: 3}
   m_Name: WalkController
   m_EditorClassIdentifier: Assembly-CSharp::WalkControllerSettings
   speed: 20
