@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     public Transform parrot;
     public RectTransform circleContainer;
     public Animator animator;
+    public AudioSource audioSource;
 
     public ControllerSettings[] controllers;
     public Material[] materials;

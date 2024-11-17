@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: WalkController
   m_EditorClassIdentifier: Assembly-CSharp::WalkControllerSettings
   speed: 20
-  inertia: 0.9
+  inertia: 0.3
