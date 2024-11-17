@@ -118,10 +118,15 @@ public class PlayerController : MonoBehaviour
             circleContainer.gameObject.SetActive(false);
             if (Cursor.lockState != CursorLockMode.Locked)
             {
-                controllerInstances[currentSegment].Enabled = false;
-                currentSegment = lastSegment;
-                controllerInstances[currentSegment].Enabled = true;
-                mesh.material = materials[currentSegment];
+                if (currentSegment != lastSegment)
+                {
+                    SpawnParticle();
+                    controllerInstances[currentSegment].Enabled = false;
+                    currentSegment = lastSegment;
+                    controllerInstances[currentSegment].Enabled = true;
+                    SpawnParticle();
+                    mesh.material = materials[currentSegment];
+                }
                 Cursor.lockState = CursorLockMode.Locked;
             }
         }
@@ -156,18 +161,14 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
-        ParticleSystem deadParticlesInstance = Instantiate(deadParticles);
-        deadParticlesInstance.transform.position = transform.position;
-        var renderer = deadParticlesInstance.GetComponent<ParticleSystemRenderer>();
-        renderer.material.color = circleParts[currentSegment].color;
-
+        SpawnParticle();
         controllerInstances[currentSegment].Enabled = false;
         parrot.gameObject.SetActive(false);
 
-        StartCoroutine(deadCoroutine());
+        StartCoroutine(DeadCoroutine());
     }
 
-    IEnumerator deadCoroutine()
+    IEnumerator DeadCoroutine()
     {
             yield return new WaitForSeconds(0.5f);
 
@@ -182,6 +183,14 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("InAir", false);
             animator.SetBool("Flying", false);
             animator.SetFloat("Speed", 0);
+    }
+
+    void SpawnParticle()
+    {
+        ParticleSystem deadParticlesInstance = Instantiate(deadParticles);
+        deadParticlesInstance.transform.position = transform.position;
+        var renderer = deadParticlesInstance.GetComponent<ParticleSystemRenderer>();
+        renderer.material.color = circleParts[currentSegment].color;
     }
 
     public void SetRestartParameters(Vector3 location, Vector3 rotation)
