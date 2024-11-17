@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -17,12 +18,12 @@ public class PlayerController : MonoBehaviour
     public RectTransform circleContainer;
     public Animator animator;
     public AudioSource audioSource;
+    public ParticleSystem deadParticles;
 
     public ControllerSettings[] controllers;
     public Material[] materials;
     IController[] controllerInstances;
     RawImage[] circleParts;
-
 
     InputAction lookAction;
     InputAction attackAction;
@@ -155,16 +156,32 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
-        transform.position = restartLocation;
-        lookRotation = restartRotation;
-        parrot.transform.rotation = Quaternion.Euler(lookRotation.y, lookRotation.x, 0);
-        body.linearVelocity = Vector3.zero;
-        controllerInstances = controllers.Select(c => c.Construct()).ToArray();
-        controllerInstances[currentSegment].Enabled = true;
-        animator.SetTrigger("Die");
-        animator.SetBool("InAir", false);
-        animator.SetBool("Flying", false);
-        animator.SetFloat("Speed", 0);
+        ParticleSystem deadParticlesInstance = Instantiate(deadParticles);
+        deadParticlesInstance.transform.position = transform.position;
+        var renderer = deadParticlesInstance.GetComponent<ParticleSystemRenderer>();
+        renderer.material.color = circleParts[currentSegment].color;
+
+        controllerInstances[currentSegment].Enabled = false;
+        parrot.gameObject.SetActive(false);
+
+        StartCoroutine(deadCoroutine());
+    }
+
+    IEnumerator deadCoroutine()
+    {
+            yield return new WaitForSeconds(0.5f);
+
+            parrot.gameObject.SetActive(true);
+            transform.position = restartLocation;
+            lookRotation = restartRotation;
+            parrot.transform.rotation = Quaternion.Euler(lookRotation.y, lookRotation.x, 0);
+            body.linearVelocity = Vector3.zero;
+            controllerInstances = controllers.Select(c => c.Construct()).ToArray();
+            controllerInstances[currentSegment].Enabled = true;
+            animator.SetTrigger("Die");
+            animator.SetBool("InAir", false);
+            animator.SetBool("Flying", false);
+            animator.SetFloat("Speed", 0);
     }
 
     public void SetRestartParameters(Vector3 location, Vector3 rotation)
