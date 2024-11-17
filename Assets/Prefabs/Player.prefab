@@ -653,6 +653,7 @@ MonoBehaviour:
   circleContainer: {fileID: 6383891603926263707}
   animator: {fileID: 8674294388073916380}
   audioSource: {fileID: 0}
+  deadParticles: {fileID: 18276569203684939, guid: 97758e0cb0640cc4c8e0407c62588856, type: 3}
   controllers:
   - {fileID: 11400000, guid: 46f07ae4814a0eb4792b53b5c04d7c4a, type: 2}
   - {fileID: 11400000, guid: da0672031a3b5f444be23c05f05a0cd3, type: 2}

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -17,12 +18,12 @@ public class PlayerController : MonoBehaviour
     public RectTransform circleContainer;
     public Animator animator;
     public AudioSource audioSource;
+    public ParticleSystem deadParticles;
 
     public ControllerSettings[] controllers;
     public Material[] materials;
     IController[] controllerInstances;
     RawImage[] circleParts;
-
 
     InputAction lookAction;
     InputAction attackAction;
@@ -117,10 +118,15 @@ public class PlayerController : MonoBehaviour
             circleContainer.gameObject.SetActive(false);
             if (Cursor.lockState != CursorLockMode.Locked)
             {
-                controllerInstances[currentSegment].Enabled = false;
-                currentSegment = lastSegment;
-                controllerInstances[currentSegment].Enabled = true;
-                mesh.material = materials[currentSegment];
+                if (currentSegment != lastSegment)
+                {
+                    SpawnParticle();
+                    controllerInstances[currentSegment].Enabled = false;
+                    currentSegment = lastSegment;
+                    controllerInstances[currentSegment].Enabled = true;
+                    SpawnParticle();
+                    mesh.material = materials[currentSegment];
+                }
                 Cursor.lockState = CursorLockMode.Locked;
             }
         }
@@ -155,16 +161,36 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
-        transform.position = restartLocation;
-        lookRotation = restartRotation;
-        parrot.transform.rotation = Quaternion.Euler(lookRotation.y, lookRotation.x, 0);
-        body.linearVelocity = Vector3.zero;
-        controllerInstances = controllers.Select(c => c.Construct()).ToArray();
-        controllerInstances[currentSegment].Enabled = true;
-        animator.SetTrigger("Die");
-        animator.SetBool("InAir", false);
-        animator.SetBool("Flying", false);
-        animator.SetFloat("Speed", 0);
+        SpawnParticle();
+        controllerInstances[currentSegment].Enabled = false;
+        parrot.gameObject.SetActive(false);
+
+        StartCoroutine(DeadCoroutine());
+    }
+
+    IEnumerator DeadCoroutine()
+    {
+            yield return new WaitForSeconds(0.5f);
+
+            parrot.gameObject.SetActive(true);
+            transform.position = restartLocation;
+            lookRotation = restartRotation;
+            parrot.transform.rotation = Quaternion.Euler(lookRotation.y, lookRotation.x, 0);
+            body.linearVelocity = Vector3.zero;
+            controllerInstances = controllers.Select(c => c.Construct()).ToArray();
+            controllerInstances[currentSegment].Enabled = true;
+            animator.SetTrigger("Die");
+            animator.SetBool("InAir", false);
+            animator.SetBool("Flying", false);
+            animator.SetFloat("Speed", 0);
+    }
+
+    void SpawnParticle()
+    {
+        ParticleSystem deadParticlesInstance = Instantiate(deadParticles);
+        deadParticlesInstance.transform.position = transform.position;
+        var renderer = deadParticlesInstance.GetComponent<ParticleSystemRenderer>();
+        renderer.material.color = circleParts[currentSegment].color;
     }
 
     public void SetRestartParameters(Vector3 location, Vector3 rotation)
