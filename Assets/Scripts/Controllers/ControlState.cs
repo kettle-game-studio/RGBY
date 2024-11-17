@@ -15,4 +15,5 @@ public class ControlState
     // Output
     public bool gravity;
     public Vector3 velocity;
+    public bool flying;
 }

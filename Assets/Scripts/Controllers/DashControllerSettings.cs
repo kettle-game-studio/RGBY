@@ -38,6 +38,7 @@ public class DashController : IController
     {
         if (isDashing)
         {
+            state.flying = true;
             float h1 = settings.curve.Evaluate(dashTime / settings.time);
             dashTime += Time.deltaTime;
             float h2 = settings.curve.Evaluate(dashTime / settings.time);
@@ -63,6 +64,7 @@ public class DashController : IController
         if (dashAction.IsPressed())
         {
             isDashing = true;
+            state.flying = true;
             direction = state.forwardRotation * settings.direction;
             dashTime = 0;
         }

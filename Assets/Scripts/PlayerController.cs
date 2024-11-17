@@ -110,6 +110,7 @@ public class PlayerController : MonoBehaviour
             }
         }
         animator.SetBool("InAir", state.jumper.inAir);
+        animator.SetBool("Flying", state.flying);
         animator.SetFloat("Speed", Math.Abs(state.velocity.z)+Math.Abs(state.velocity.x));
     }
 
@@ -120,6 +121,7 @@ public class PlayerController : MonoBehaviour
 
         state.velocity = new Vector3(0, body.linearVelocity.y, 0);
         state.gravity = true;
+        state.flying = false;
 
         foreach (var controller in controllerInstances)
             controller.Iterate(state);
