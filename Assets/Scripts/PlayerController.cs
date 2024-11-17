@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour
     ControlState state = new ControlState();
     int lastSegment;
     int currentSegment = 0;
+    Vector3 lastParrotDirection;
 
     void Start()
     {
@@ -73,9 +74,22 @@ public class PlayerController : MonoBehaviour
 
         cameraCenter.transform.rotation = Quaternion.Euler(lookRotation.y, lookRotation.x, 0);
 
-        if (new Vector2(body.linearVelocity.x, body.linearVelocity.z).magnitude > 0.01f)
+        float eps = 1.0f;
+        float delta2 = new Vector2(body.linearVelocity.x, body.linearVelocity.z).magnitude;
+        if (delta2 > 0.1f)
         {
-            parrot.transform.rotation = Quaternion.LookRotation(new Vector3(body.linearVelocity.x, 0, body.linearVelocity.z));
+            lastParrotDirection = body.linearVelocity;
+        }
+
+        if (delta2 > eps)
+        {
+            parrot.transform.rotation = Quaternion.LookRotation(lastParrotDirection);
+        }
+        else
+        {
+            float k = delta2 / eps;
+            lastParrotDirection = new Vector3(lastParrotDirection.x, lastParrotDirection.y * k, lastParrotDirection.z);
+            parrot.transform.rotation =  Quaternion.LookRotation(lastParrotDirection);
         }
 
         if (attackAction.IsPressed())
@@ -137,6 +151,7 @@ public class PlayerController : MonoBehaviour
         {
             transform.position = restartLocation;
             lookRotation = restartRotation;
+            parrot.transform.rotation = Quaternion.Euler(lookRotation.y, lookRotation.x, 0);
             body.linearVelocity = Vector3.zero;
         }
     }
