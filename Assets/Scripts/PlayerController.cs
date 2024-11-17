@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
     Vector2 lookRotation;
 
     Vector3 restartLocation;
-    Vector3 restartRotation;
+    Vector2 restartRotation;
     Vector2 mouseCenterPosition;
 
     ControlState state = new ControlState();
@@ -43,8 +43,8 @@ public class PlayerController : MonoBehaviour
         lookRotation = new Vector2(cameraCenter.transform.rotation.eulerAngles.y, cameraCenter.transform.rotation.eulerAngles.x);
         body = GetComponent<Rigidbody>();
 
-        restartLocation = lookRotation;
-        restartRotation = transform.position;
+        restartLocation = transform.position;
+        restartRotation = lookRotation;
 
 
         controllerInstances = controllers.Select(c => c.Construct()).ToArray();
@@ -125,5 +125,11 @@ public class PlayerController : MonoBehaviour
             lookRotation = restartRotation;
             body.linearVelocity = Vector3.zero;
         }
+    }
+
+    public void SetRestartParameters(Vector3 location, Vector3 rotation)
+    {
+        restartLocation = location;
+        restartRotation = new Vector2(rotation.y, rotation.x);
     }
 }
