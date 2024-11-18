@@ -99,7 +99,7 @@ public class PlayerController : MonoBehaviour
             if (Cursor.lockState == CursorLockMode.Locked)
             {
                 mouseCenterPosition = Mouse.current.position.ReadValue();
-                Cursor.lockState = CursorLockMode.Confined;
+                Cursor.lockState = CursorLockMode.None;
             }
             else
             {
